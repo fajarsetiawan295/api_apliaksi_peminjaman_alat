@@ -76,8 +76,8 @@ func (a *App) initializeRoutes() {
 }
 
 func (a *App) RunServer() {
-	var port = ":80"
-	log.Printf("\nServer starting on port 80")
+	var port = ":81"
+	log.Printf("\nServer starting on port " + port)
 	// log.Fatal(http.ListenAndServe(port, a.Router))
 	log.Fatal(http.ListenAndServe(port, handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(a.Router)))
 }
