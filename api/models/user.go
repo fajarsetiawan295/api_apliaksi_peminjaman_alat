@@ -11,20 +11,25 @@ import (
 
 type User struct {
 	gorm.Model
-	Email    string `gorm:"type:varchar(100);unique_index" json:"email"`
-	Name     string `gorm:"size:100;not null"              json:"name"`
-	Nomor_hp string `gorm:"size:100;not null;unique_index" json:"nomor_hp"`
-	Password string `gorm:"size:100;not null"              json:"password"`
-	Role     string `gorm:"size:100;not null"          json:"role"`
-	Npm      string `gorm:"size:100;not null"          json:"npm"`
-	Foto     string `gorm:"size:1000;not null"          json:"foto"`
+	Email        string `gorm:"type:varchar(100);unique_index" 	json:"email"`
+	Name         string `gorm:"size:100;not null"              	json:"name"`
+	Nama_lengkap string `gorm:"size:100;"              	json:"nama_lengkap"`
+	Nomor_hp     string `gorm:"size:100;not null;unique_index" 	json:"nomor_hp"`
+	Password     string `gorm:"size:100;not null"              	json:"password"`
+	Role         string `gorm:"size:100;not null"         		json:"role"`
+	Npm          string `gorm:"size:100;not null"          		json:"npm"`
+	Foto         string `gorm:"size:1000;not null"          	json:"foto"`
 }
 type StukturUser struct {
-	Id       int64  `json:"id"`
-	Email    string `gorm:"type:varchar(100);unique_index" json:"email"`
-	Name     string `gorm:"size:100;not null"              json:"name"`
-	Nomor_hp string `gorm:"size:100;not null;unique_index" json:"nomor_hp"`
-	Role     string `gorm:"size:100;not null;unique_index" json:"role"`
+	Id           int64  `json:"id"`
+	Email        string `json:"email"`
+	Name         string `json:"name"`
+	Nama_lengkap string `json:"nama_lengkap"`
+	Nomor_hp     string `json:"nomor_hp"`
+	Password     string `json:"password"`
+	Role         string `json:"role"`
+	Npm          string `json:"npm"`
+	Foto         string `json:"foto"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -89,6 +94,10 @@ func (u *User) Validate(action string) error {
 		if u.Npm == "" {
 
 			return errors.New("NPM is required")
+		}
+		if u.Nama_lengkap == "" {
+
+			return errors.New("Nama Lengkap is required")
 		}
 		switch u.Role {
 		case "Ka Lab":
