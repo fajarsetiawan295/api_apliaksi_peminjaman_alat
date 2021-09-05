@@ -109,7 +109,7 @@ func (a *App) RunServer() {
 		fmt.Println(err)
 	}
 	fmt.Println(ip)
-	var port = ":8080"
+	var port = ":8092"
 	log.Printf("\nServer starting on port " + port)
 	// log.Fatal(http.ListenAndServe(port, a.Router))
 	log.Fatal(http.ListenAndServe(port, handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(a.Router)))
