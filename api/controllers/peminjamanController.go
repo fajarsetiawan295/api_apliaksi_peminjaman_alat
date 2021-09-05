@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/tokoumat/api/models"
-	"github.com/tokoumat/api/responses"
-	"github.com/tokoumat/api/services"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/models"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/responses"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/services"
 )
 
 func (a *App) StorePeminjaman(w http.ResponseWriter, r *http.Request) {

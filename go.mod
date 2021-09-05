@@ -1,4 +1,4 @@
-module github.com/tokoumat
+module github.com/fajars295/api_apliaksi_peminjaman_alat
 
 go 1.13
 

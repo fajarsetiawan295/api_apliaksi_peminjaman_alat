@@ -8,7 +8,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 
-	"github.com/tokoumat/api/responses"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/responses"
 )
 
 // SetContentTypeMiddleware sets content-type to json

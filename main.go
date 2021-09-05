@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/controllers"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/services"
 	"github.com/joho/godotenv"
-	"github.com/tokoumat/api/controllers"
-	"github.com/tokoumat/api/services"
 )
 
 func main() {

@@ -13,8 +13,8 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres
 
-	"github.com/tokoumat/api/middlewares"
-	"github.com/tokoumat/api/models"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/middlewares"
+	"github.com/fajars295/api_apliaksi_peminjaman_alat/api/models"
 )
 
 type App struct {
