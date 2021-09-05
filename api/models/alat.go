@@ -9,14 +9,14 @@ import (
 
 type DataAlat struct {
 	gorm.Model
-	Name_alat     string `gorm:"size:100;not null"              json:"name_alat"`
-	Kapasitas     string `gorm:"size:100;not null" 				json:"kapasitas"`
-	Merek_alat    string `gorm:"size:100;not null"              json:"merek_alat"`
-	Distributor   string `gorm:"size:100;not null"       		json:"distributor"`
-	Tanggal_masuk string `gorm:"size:100;not null"          	json:"tanggal_masuk"`
-	Qty           int64  `gorm:"size:1000;not null"          	json:"qty"`
-	Created_by    int64  `gorm:"size:1000;not null"          	json:"created_by"`
-	Updated_by    int64  `gorm:"size:1000;"          			json:"updated_by"`
+	Name_alat     string `gorm:"size:100;not null" json:"name_alat"`
+	Kapasitas     string `gorm:"size:100;not null" json:"kapasitas"`
+	Merek_alat    string `gorm:"size:100;not null" json:"merek_alat"`
+	Distributor   string `gorm:"size:100;not null" json:"distributor"`
+	Tanggal_masuk string `gorm:"size:100;not null" json:"tanggal_masuk"`
+	Qty           int64  `gorm:"size:1000;not null" json:"qty"`
+	Created_by    int64  `gorm:"size:1000;not null" json:"created_by"`
+	Updated_by    int64  `gorm:"size:1000;" json:"updated_by"`
 }
 type StukturDataAlat struct {
 	Id            int64  `json:"id"`

@@ -9,14 +9,14 @@ import (
 
 type DataPenelitian struct {
 	gorm.Model
-	Data_alats_id int64  `gorm:"size:100;not null"              json:"data_alats_id"`
-	Nama_alat     string `gorm:"size:100;not null" 				json:"nama_alat"`
-	Qty           int64  `gorm:"not null"      			        json:"qty"`
-	Tanggal       string `gorm:"size:100;not null"          	json:"tanggal"`
-	Jenis         string `gorm:""          						json:"jenis"`
-	Status        string `gorm:""          						json:"status"`
-	Created_by    int64  `gorm:"not null"    			      	json:"created_by"`
-	Updated_by    int64  `gorm:""          						json:"updated_by"`
+	Data_alats_id int64  `gorm:"size:100;not null" json:"data_alats_id"`
+	Nama_alat     string `gorm:"size:100;not null" json:"nama_alat"`
+	Qty           int64  `gorm:"not null" json:"qty"`
+	Tanggal       string `gorm:"size:100;not null" json:"tanggal"`
+	Jenis         string `gorm:"" json:"jenis"`
+	Status        string `gorm:"" json:"status"`
+	Created_by    int64  `gorm:"not null" json:"created_by"`
+	Updated_by    int64  `gorm:"" json:"updated_by"`
 }
 type StukturDataPenelitian struct {
 	Id            int64  `json:"id"`

@@ -9,26 +9,26 @@ import (
 
 type DataMedia struct {
 	gorm.Model
-	Name_media    string `gorm:"size:100;not null"              json:"name_media"`
-	Satuan        string `gorm:"size:100;not null" 				json:"satuan"`
-	Merek_media   string `gorm:"size:100;not null"              json:"merek_media"`
-	Distributor   string `gorm:"size:100;not null"       		json:"distributor"`
-	Tanggal_masuk string `gorm:"size:100;not null"          	json:"tanggal_masuk"`
-	Expired       string `gorm:"size:1000;not null"          	json:"expired"`
-	Status        string `gorm:"size:1000;not null"          	json:"status"`
-	Created_by    int64  `gorm:"size:1000;not null"          	json:"created_by"`
-	Updated_by    int64  `gorm:"size:1000;"          			json:"updated_by"`
+	Name_media    string `gorm:"size:100;not null" json:"name_media"`
+	Satuan        string `gorm:"size:100;not null" json:"satuan"`
+	Merek_media   string `gorm:"size:100;not null" json:"merek_media"`
+	Distributor   string `gorm:"size:100;not null" json:"distributor"`
+	Tanggal_masuk string `gorm:"size:100;not null" json:"tanggal_masuk"`
+	Expired       string `gorm:"size:1000;not null" json:"expired"`
+	Status        string `gorm:"size:1000;not null" json:"status"`
+	Created_by    int64  `gorm:"size:1000;not null" json:"created_by"`
+	Updated_by    int64  `gorm:"size:1000;" json:"updated_by"`
 }
 type StukturDataMedia struct {
 	Id            int64  `json:"id"`
-	Name_media    string `gorm:"size:100;not null"              json:"name_media"`
-	Satuan        string `gorm:"size:100;not null" 				json:"satuan"`
-	Merek_media   string `gorm:"size:100;not null"              json:"merek_media"`
-	Distributor   string `gorm:"size:100;not null"       		json:"distributor"`
-	Tanggal_masuk string `gorm:"size:100;not null"          	json:"tanggal_masuk"`
-	Expired       string `gorm:"size:1000;not null"          	json:"expired"`
-	Created_by    int64  `gorm:"size:1000;not null"          	json:"created_by"`
-	Updated_by    int64  `gorm:"size:1000;"          			json:"updated_by"`
+	Name_media    string `son:"name_media"`
+	Satuan        string `son:"satuan"`
+	Merek_media   string `son:"merek_media"`
+	Distributor   string `json:"distributor"`
+	Tanggal_masuk string `json:"tanggal_masuk"`
+	Expired       string `json:"expired"`
+	Created_by    int64  `json:"created_by"`
+	Updated_by    int64  `json:"updated_by"`
 }
 
 func (u *DataMedia) Validate(action string) error {
@@ -102,9 +102,16 @@ func (u *DataMedia) GetDataMedia(db *gorm.DB, parameter string, data string) (*D
 	}
 	return account, nil
 }
+func (u *DataMedia) GetDataMediaInt(db *gorm.DB, parameter string, data int64) (*DataMedia, error) {
+	account := &DataMedia{}
+	if err := db.Debug().Table("data_media").Where(parameter, data).First(account).Error; err != nil {
+		return nil, err
+	}
+	return account, nil
+}
 func (u *DataMedia) GetAll(value string, parameter string, db *gorm.DB) (*[]DataMedia, error) {
 	account := []DataMedia{}
-	var condition = value + " LIKE ?"
+	var condition = value + " ILIKE ?"
 	if err := db.Debug().Table("data_media").Where(condition, "%"+parameter+"%").Find(&account).Error; err != nil {
 		return nil, errors.New("Data Tidak di temukan")
 	}

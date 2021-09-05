@@ -28,9 +28,9 @@ func (a *App) UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	cek := &models.User{}
 
-	usr, _ := cek.GetUser(a.DB, "email  = ?", r.FormValue("email"))
+	usr, _ := cek.GetUser(a.DB, "name  = ?", r.FormValue("name"))
 	if usr != nil {
-		responses.FAILED(w, http.StatusBadRequest, "email already registered, please login", nil)
+		responses.FAILED(w, http.StatusBadRequest, "Username already registered, please login", nil)
 		return
 	}
 
@@ -41,13 +41,16 @@ func (a *App) UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &models.User{
-		Name:     r.FormValue("name"),
-		Nomor_hp: r.FormValue("nomor_hp"),
-		Npm:      r.FormValue("npm"),
-		Password: r.FormValue("password"),
-		Email:    r.FormValue("email"),
-		Role:     r.FormValue("role"),
-		Foto:     upload,
+		Name:              r.FormValue("name"),
+		Nama_lengkap:      r.FormValue("nama_lengkap"),
+		Nomor_hp:          r.FormValue("nomor_hp"),
+		Npm:               r.FormValue("npm"),
+		Password:          r.FormValue("password"),
+		Role:              r.FormValue("role"),
+		Foto:              upload,
+		Status:            "0",
+		Status_pembayaran: 2,
+		Status_penelitian: 2,
 	}
 
 	user.Prepare()
@@ -58,6 +61,74 @@ func (a *App) UserSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userCreated, err := user.SaveUser(a.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	resp["data"] = userCreated
+	responses.JSON(w, http.StatusCreated, resp)
+	return
+}
+
+func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	erro := r.ParseMultipartForm(100000)
+	if erro != nil {
+		responses.ERROR(w, http.StatusBadRequest, erro)
+		return
+	}
+	upload, err := services.UploadFile(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	user := &models.User{
+		Name:         r.FormValue("name"),
+		Nama_lengkap: r.FormValue("nama_lengkap"),
+		Nomor_hp:     r.FormValue("nomor_hp"),
+		Npm:          r.FormValue("npm"),
+		Password:     r.FormValue("password"),
+		Foto:         upload,
+	}
+	user.Prepare()
+	err = user.Validate("update")
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	userCreated, err := user.Update(r.FormValue("id"), a.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	resp["data"] = userCreated
+	responses.JSON(w, http.StatusCreated, resp)
+	return
+}
+func (a *App) UpdateIdUser(w http.ResponseWriter, r *http.Request) {
+	erro := r.ParseMultipartForm(100000)
+	if erro != nil {
+		responses.ERROR(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	user := &models.User{
+		Name:              r.FormValue("name"),
+		Nama_lengkap:      r.FormValue("nama_lengkap"),
+		Nomor_hp:          r.FormValue("nomor_hp"),
+		Npm:               r.FormValue("npm"),
+		Password:          r.FormValue("password"),
+		Status_pembayaran: int64(services.StringToInt(r.FormValue("status_pembayaran"))),
+		Status_penelitian: int64(services.StringToInt(r.FormValue("status_penelitian"))),
+		Status:            r.FormValue("status"),
+	}
+	user.Prepare()
+
+	err := user.Validate("update")
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	userCreated, err := user.UpdateStatus(r.FormValue("id"), a.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -91,14 +162,9 @@ func (a *App) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr, err := user.GetUser(a.DB, "email = ?", user.Email)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-
+	usr, _ := user.GetUser(a.DB, "name = ?", user.Name)
 	if usr == nil { // user is not registered
-		responses.FAILED(w, http.StatusBadRequest, "email not registered", nil)
+		responses.FAILED(w, http.StatusBadRequest, "Username not registered", nil)
 		return
 	}
 
@@ -133,9 +199,22 @@ func (a *App) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, resp)
 	return
 }
+
 func (a *App) getProfile(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value("userID").(float64)
 	users, err := models.Getfinduser(uint(userId), a.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	resp["data"] = users
+	responses.JSON(w, http.StatusOK, resp)
+	return
+}
+func (a *App) getById(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("id")
+	users, err := models.Getfinduser(uint(services.StringToInt(userId)), a.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

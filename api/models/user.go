@@ -4,32 +4,37 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	gorm.Model
-	Email        string `gorm:"type:varchar(100);unique_index" 	json:"email"`
-	Name         string `gorm:"size:100;not null"              	json:"name"`
-	Nama_lengkap string `gorm:"size:100;"              	json:"nama_lengkap"`
-	Nomor_hp     string `gorm:"size:100;not null;unique_index" 	json:"nomor_hp"`
-	Password     string `gorm:"size:100;not null"              	json:"password"`
-	Role         string `gorm:"size:100;not null"         		json:"role"`
-	Npm          string `gorm:"size:100;not null"          		json:"npm"`
-	Foto         string `gorm:"size:1000;not null"          	json:"foto"`
+	Name              string `gorm:"size:100;not null" json:"name"`
+	Nama_lengkap      string `gorm:"size:100;" json:"nama_lengkap"`
+	Nomor_hp          string `gorm:"size:100;not null;unique_index" json:"nomor_hp"`
+	Password          string `gorm:"size:100;not null" json:"password"`
+	Role              string `gorm:"size:100;not null" json:"role"`
+	Npm               string `gorm:"size:100;not null" json:"npm"`
+	Foto              string `gorm:"size:1000;not null" json:"foto"`
+	Lapangan          string `gorm:"default:1" json:"Lapangan"`
+	Penelitian        string `gorm:"default:0" json:"Penelitian"`
+	Status_pembayaran int64  `gorm:"default:0" json:"status_pembayaran"`
+	Status_penelitian int64  `gorm:"default:0" json:"status_penelitian"`
+	Status            string `gorm:"default:0" json:"status"`
 }
 type StukturUser struct {
-	Id           int64  `json:"id"`
-	Email        string `json:"email"`
-	Name         string `json:"name"`
-	Nama_lengkap string `json:"nama_lengkap"`
-	Nomor_hp     string `json:"nomor_hp"`
-	Password     string `json:"password"`
-	Role         string `json:"role"`
-	Npm          string `json:"npm"`
-	Foto         string `json:"foto"`
+	Id                int64  `json:"id"`
+	Name              string `json:"name"`
+	Nama_lengkap      string `json:"nama_lengkap"`
+	Nomor_hp          string `json:"nomor_hp"`
+	Password          string `json:"password"`
+	Role              string `json:"role"`
+	Npm               string `json:"npm"`
+	Foto              string `json:"foto"`
+	Status_pembayaran int64  `json:"status_pembayaran"`
+	Status_penelitian int64  `json:"status_penelitian"`
+	Status            string `json:"status"`
 }
 
 func HashPassword(password string) (string, error) {
@@ -56,7 +61,6 @@ func (u *User) BeforeSave() error {
 }
 
 func (u *User) Prepare() {
-	u.Email = strings.TrimSpace(u.Email)
 	u.Name = strings.TrimSpace(u.Name)
 	u.Nomor_hp = strings.TrimSpace(u.Nomor_hp)
 }
@@ -64,12 +68,34 @@ func (u *User) Prepare() {
 func (u *User) Validate(action string) error {
 	switch strings.ToLower(action) {
 	case "login":
-		if u.Nomor_hp == "" && u.Email == "" {
-			return errors.New("Nomor Handphone or Email is required")
+		if u.Name == "" {
+			return errors.New("Username is required")
 		}
 		if u.Password == "" {
 			return errors.New("Password is required")
 		}
+		return nil
+	case "update":
+		if u.Name == "" {
+			return errors.New("Name is required")
+		}
+		if u.Nomor_hp == "" {
+			return errors.New("nomor handpone is required")
+		}
+
+		if u.Password == "" {
+			return errors.New("Password is required")
+		}
+
+		if u.Npm == "" {
+
+			return errors.New("NPM is required")
+		}
+		if u.Nama_lengkap == "" {
+
+			return errors.New("Nama Lengkap is required")
+		}
+
 		return nil
 	default:
 		if u.Name == "" {
@@ -78,15 +104,11 @@ func (u *User) Validate(action string) error {
 		if u.Nomor_hp == "" {
 			return errors.New("nomor handpone is required")
 		}
-		if u.Email == "" {
-			return errors.New("Email is required")
-		}
+
 		if u.Password == "" {
 			return errors.New("Password is required")
 		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
-			return errors.New("Invalid Email")
-		}
+
 		if u.Role == "" {
 
 			return errors.New("role is required")
@@ -175,10 +197,50 @@ func (v *User) UpdateForgotPassword(id string, pa string, db *gorm.DB) (*User, e
 	return v, nil
 }
 
-func (v *User) UpdateUserNomor(id uint, pa string, db *gorm.DB) (*User, error) {
+func (v *User) Update(id string, db *gorm.DB) (*User, error) {
+	hashedpassword, _ := HashPassword(v.Password)
+	if err := db.Debug().Table("users").Where("id = ?", id).Updates(User{
+		Name:         v.Name,
+		Nama_lengkap: v.Nama_lengkap,
+		Nomor_hp:     v.Nomor_hp,
+		Password:     hashedpassword,
+		Role:         v.Role,
+		Npm:          v.Npm,
+		Foto:         v.Foto,
+	}).Error; err != nil {
+		return &User{}, err
+	}
+	return v, nil
+}
+func (v *User) UpdateStatus(id string, db *gorm.DB) (*User, error) {
+	hashedpassword, _ := HashPassword(v.Password)
+	if err := db.Debug().Table("users").Where("id = ?", id).Updates(User{
+		Name:              v.Name,
+		Nama_lengkap:      v.Nama_lengkap,
+		Nomor_hp:          v.Nomor_hp,
+		Password:          hashedpassword,
+		Npm:               v.Npm,
+		Status:            v.Status,
+		Status_pembayaran: v.Status_pembayaran,
+		Status_penelitian: v.Status_penelitian,
+	}).Error; err != nil {
+		return &User{}, err
+	}
+	return v, nil
+}
+
+func (v *User) UpdateStatusPembayaran(id int, db *gorm.DB) (*User, error) {
 
 	if err := db.Debug().Table("users").Where("id = ?", id).Updates(User{
-		Nomor_hp: pa,
+		Status_pembayaran: v.Status_pembayaran,
+	}).Error; err != nil {
+		return &User{}, err
+	}
+	return v, nil
+}
+func (v *User) UpdateStatusPenelitian(id uint, pa int, db *gorm.DB) (*User, error) {
+	if err := db.Debug().Table("users").Where("id = ?", id).Updates(User{
+		Status_penelitian: v.Status_pembayaran,
 	}).Error; err != nil {
 		return &User{}, err
 	}
