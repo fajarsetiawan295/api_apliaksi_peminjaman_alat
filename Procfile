@@ -1,1 +1,1 @@
-web: tokoumat
+web: bin/tokoumat
